@@ -1,0 +1,5 @@
+spring:
+  application:    name: config-server
+  cloud:    config:      server:        bootstrap: true        git:          username: vijayasjava          default-label: master          password: a3b0607babb1aeccd403b7f9171fe46999d606cd          uri: https://github.com/vijayasjava/config-server-repository.git
+          clone-on-start: true
+        

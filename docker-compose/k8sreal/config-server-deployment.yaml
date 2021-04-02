@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: config-server
+  name: config-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: config-server
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms128m -Xmx256m
+        - name: LOGGING_LEVEL_COM_LAB_ALI
+          value: info
+        - name: LOGGING_LEVEL_ROOT
+          value: info
+        - name: SPRING_CLOUD_CONFIG_SERVER_BOOTSTRAP
+          value: "true"
+        - name: SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT-LABEL
+          value: master
+        - name: SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD
+          value: a3b0607babb1aeccd403b7f9171fe46999d606cd
+        - name: SPRING_CLOUD_CONFIG_SERVER_GIT_URI
+          value: https://github.com/vijayasjava/config-server-repository.git
+        - name: SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME
+          value: vijayasjava
+        image: vijayakrishnajava/com.lab.ali-config-server:0.0.1-SNAPSHOT
+        imagePullPolicy: IfNotPresent
+        name: config-server
+        ports:
+        - containerPort: 8888
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\WINDOWS\system32\kompose.exe convert -f out.yml --indent 2 -o
+      k8s
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: kafka-broker-2
+  name: kafka-broker-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: kafka-broker-2
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\WINDOWS\system32\kompose.exe convert -f out.yml --indent 2
+          -o k8s
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/application: "true"
+        io.kompose.service: kafka-broker-2
+    spec:
+      containers:
+      - env:
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: PLAINTEXT://kafka-broker-2:9092,LISTENER_LOCAL://localhost:29092
+        - name: KAFKA_BROKER_ID
+          value: "2"
+        - name: KAFKA_COMPRESSION_TYPE
+          value: producer
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: PLAINTEXT
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: PLAINTEXT:PLAINTEXT,LISTENER_LOCAL:PLAINTEXT
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zookeeper:2181
+        image: confluentinc/cp-kafka:5.0.4
+        imagePullPolicy: ""
+        name: kafka-broker-2
+        ports:
+        - containerPort: 29092
+        resources: {}
+      hostname: kafka-broker-2
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

@@ -1,0 +1,6 @@
+spring:  profiles:    active: dev  application: 
+    name: twittertokafkaservice
+  cloud:
+    config:      uri:
+      - http://localhost:8888
+      

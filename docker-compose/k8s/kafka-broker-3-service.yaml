@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: C:\WINDOWS\system32\kompose.exe convert -f out.yml --indent 2 -o
+      k8s
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: kafka-broker-3
+  name: kafka-broker-3
+spec:
+  ports:
+  - name: "39092"
+    port: 39092
+    targetPort: 39092
+  selector:
+    io.kompose.service: kafka-broker-3
+status:
+  loadBalancer: {}

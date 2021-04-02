@@ -1,18 +1,65 @@
 version: '3.7'
 services:
   twitter-to-kafka-service:
-    image: ${DOCKERID}/${GROUPID}-${ARTIFACTID}:${SERVICE_VERSION:-latest}
+    image: ${DOCKERID}/${GROUPID}-${TWITTER_TO_KAFKA_SERVICE_ARTIFACTID}:${SERVICE_VERSION:-latest}
     ports:
-      - "5005:5005"
+      - "5006:5006"
     volumes:
-      - "./docker-logs:/workspace/twitter-to-kafka-service/logs"
+      - "./twitter-to-kafka-service-logs:/workspace/twitter-to-kafka-service/logs"
+      - "/home/docker/check-config-server-started.sh:/usr/local/bin/check-config-server-started.sh"
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms128m -Xmx256m"
       - "LOGGING_LEVEL_COM_LAB_ALI=info"
       - "LOGGING_LEVEL_ROOT=info"
       - "KAFKA-CONFIG_TOPIC-NAME=twitter-topic"
-      - "KAFKA-CONFIG_BOOTSTRAP-SERVERS=kafka-broker-1:9092, kafka-broker-2:9092, kafka-broker-3:9092"
+      - "KAFKA-CONFIG_BOOTSTRAP-SERVERS=kafka-broker-1:9092"
       - "KAFKA-CONFIG_SCHEMA-REGISTRY-URL=http://schema-registry:8081"
       - "TWITTER-TO-KAFKA-SERVICE_ENABLE-MOCK-TWEETS=true"
+      - "SPRING_CLOUD_CONFIG_URI=http://config-server:8888"
+    depends_on:
+      - config-server 
+    user: root
+    entrypoint: ["/usr/local/bin/check-config-server-started.sh"]
     networks:
       - ${GLOBAL_NETWORK:-services}
+  kafka-to-elasticsearch-service:
+    image: ${DOCKERID}/${GROUPID}-${KAFKA_TO_ELASTICSEARCH_SERVICE_ARTIFACTID}:${SERVICE_VERSION:-latest}
+    ports:
+      - "6006:6006"
+    volumes:
+      - "./kafka-to-elasticsearch-service-logs:/workspace/kafka-to-elasticsearch-service/logs"
+      - "/home/docker/check-config-server-started.sh:/usr/local/bin/check-config-server-started.sh"
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms128m -Xmx256m"
+      - "LOGGING_LEVEL_COM_LAB_ALI=info"
+      - "LOGGING_LEVEL_ROOT=info"
+      - "KAFKA-CONFIG_TOPIC-NAME=twitter-topic"
+      - "KAFKA-CONFIG_BOOTSTRAP-SERVERS=kafka-broker-1:9092"
+      - "KAFKA-CONFIG_SCHEMA-REGISTRY-URL=http://schema-registry:8081"
+      - "TWITTER-TO-KAFKA-SERVICE_ENABLE-MOCK-TWEETS=true"
+      - "SPRING_CLOUD_CONFIG_URI=http://config-server:8888"
+    depends_on:
+      - config-server 
+    user: root
+    entrypoint: ["/usr/local/bin/check-config-server-started.sh"]
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+  config-server:
+    image: ${DOCKERID}/${GROUPID}-${CONFIG_SERVER_ARTIFACTID}:${SERVICE_VERSION:-latest}
+    ports:
+      - "8888:8888"
+    volumes:
+      - "./config-server-logs:/workspace/config-server/logs"
+      - "/home/docker/check-config-server-started.sh:/usr/local/bin/check-config-server-started.sh"
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms128m -Xmx256m"
+      - "LOGGING_LEVEL_COM_LAB_ALI=info"
+      - "LOGGING_LEVEL_ROOT=info"
+      - "SPRING_CLOUD_CONFIG_SERVER_BOOTSTRAP=true"
+      - "SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME=vijayasjava"
+      - "SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT-LABEL=master"
+      - "SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD=a3b0607babb1aeccd403b7f9171fe46999d606cd"
+      - "SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/vijayasjava/config-server-repository.git"
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+      

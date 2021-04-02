@@ -1,17 +1,15 @@
 <?xml version="1.0"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.lab.ali</groupId>
-		<artifactId>microservices-demo</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-	<artifactId>twitter-to-kafka-service</artifactId>
-	<name>twitter-to-kafka-service</name>
-	<url>http://maven.apache.org</url>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.lab.ali</groupId>
+    <artifactId>microservices-demo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>kafka-to-elasticsearch-service</artifactId>
+  <name>kafka-to-elasticsearch-service</name>
+
 	<dependencies>
 		<dependency>
 			<artifactId>app-config-data</artifactId>
@@ -29,19 +27,16 @@
 			<artifactId>kafka-model</artifactId>
 			<groupId>com.lab.ali</groupId>
 		</dependency>
-		<dependency>
-			<artifactId>kafka-producer</artifactId>
-			<groupId>com.lab.ali</groupId>
-		</dependency>
+	     <dependency>
+	     	<artifactId>kafka-consumer</artifactId>
+	     	<groupId>com.lab.ali</groupId>
+	     </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.twitter4j</groupId>
-			<artifactId>twitter4j-stream</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
 		      <dependency>
 		        <groupId>org.projectlombok</groupId>
 		        <artifactId>lombok</artifactId>
@@ -58,9 +53,18 @@
 			<optional>true</optional>
 		</dependency>
 		
-		        <dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
         </dependency>
 		
 	</dependencies>
@@ -80,4 +84,6 @@
 			</plugin>
 			</plugins>
 	</build>
+
+
 </project>

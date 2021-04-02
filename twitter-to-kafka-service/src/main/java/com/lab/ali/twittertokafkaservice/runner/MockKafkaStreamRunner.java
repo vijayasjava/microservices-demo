@@ -25,11 +25,16 @@ import twitter4j.TwitterObjectFactory;
 
 @Component
 @ConditionalOnProperty(name = "enable-mock-tweets",
-		prefix = "twitter-to-kafka-service", havingValue = "true")
-@AllArgsConstructor
+		prefix = "twitter-to-kafka-service", havingValue = "true", matchIfMissing = true)
 @Data
 public class MockKafkaStreamRunner implements StreamRunnable {
 
+	public MockKafkaStreamRunner(TwitterToKafkaConfiguration twitterToKafkaConfiguration,
+	TwitterStreamListener twitterStreamListener) {
+		this.twitterToKafkaConfiguration = twitterToKafkaConfiguration;
+		this.twitterStreamListener = twitterStreamListener;
+	}
+	
 	TwitterToKafkaConfiguration twitterToKafkaConfiguration;
 	TwitterStreamListener twitterStreamListener;
 	

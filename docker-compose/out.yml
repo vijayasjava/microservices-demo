@@ -1,0 +1,131 @@
+networks:
+  application:
+    driver: bridge
+    name: application
+services:
+  config-server:
+    environment:
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+        -Xms128m -Xmx256m
+      LOGGING_LEVEL_COM_LAB_ALI: info
+      LOGGING_LEVEL_ROOT: info
+      SPRING_CLOUD_CONFIG_SERVER_BOOTSTRAP: "true"
+      SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT-LABEL: master
+      SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD: a3b0607babb1aeccd403b7f9171fe46999d606cd
+      SPRING_CLOUD_CONFIG_SERVER_GIT_URI: https://github.com/vijayasjava/config-server-repository.git
+      SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME: vijayasjava
+    image: vijayakrishnajava/com.lab.ali-config-server:0.0.1-SNAPSHOT
+    networks:
+      application: {}
+    ports:
+    - published: 8888
+      target: 8888
+    volumes:
+    - /e/seemakurthi/courses/microservices_ali/sources/microservices-demo/docker-compose/docker-logs:/workspace/config-server/logs:rw
+  kafka-broker-1:
+    depends_on:
+    - zookeeper
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:9092,LISTENER_LOCAL://localhost:19092
+      KAFKA_BROKER_ID: 1
+      KAFKA_COMPRESSION_TYPE: producer
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,LISTENER_LOCAL:PLAINTEXT
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    hostname: kafka-broker-1
+    image: confluentinc/cp-kafka:5.0.4
+    networks:
+      application: {}
+    ports:
+    - published: 19092
+      target: 19092
+  kafka-broker-2:
+    depends_on:
+    - zookeeper
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-2:9092,LISTENER_LOCAL://localhost:29092
+      KAFKA_BROKER_ID: 2
+      KAFKA_COMPRESSION_TYPE: producer
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,LISTENER_LOCAL:PLAINTEXT
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    hostname: kafka-broker-2
+    image: confluentinc/cp-kafka:5.0.4
+    networks:
+      application: {}
+    ports:
+    - published: 29092
+      target: 29092
+  kafka-broker-3:
+    depends_on:
+    - zookeeper
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-3:9092,LISTENER_LOCAL://localhost:39092
+      KAFKA_BROKER_ID: 3
+      KAFKA_COMPRESSION_TYPE: producer
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,LISTENER_LOCAL:PLAINTEXT
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    hostname: kafka-broker-3
+    image: confluentinc/cp-kafka:5.0.4
+    networks:
+      application: {}
+    ports:
+    - published: 39092
+      target: 39092
+  schema-registry:
+    depends_on:
+    - kafka-broker-1
+    - kafka-broker-2
+    - kafka-broker-3
+    - zookeeper
+    environment:
+      SCHEMA_REGISTRY_DEBUG: "true"
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
+      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
+    hostname: schema-registry
+    image: confluentinc/cp-schema-registry:5.0.4
+    networks:
+      application: {}
+    ports:
+    - published: 8081
+      target: 8081
+  twitter-to-kafka-service:
+    depends_on:
+    - config-server
+    environment:
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+        -Xms128m -Xmx256m
+      KAFKA-CONFIG_BOOTSTRAP-SERVERS: kafka-broker-1:9092, kafka-broker-2:9092, kafka-broker-3:9092
+      KAFKA-CONFIG_SCHEMA-REGISTRY-URL: http://schema-registry:8081
+      KAFKA-CONFIG_TOPIC-NAME: twitter-topic
+      LOGGING_LEVEL_COM_LAB_ALI: info
+      LOGGING_LEVEL_ROOT: info
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      TWITTER-TO-KAFKA-SERVICE_ENABLE-MOCK-TWEETS: "true"
+    image: vijayakrishnajava/com.lab.ali-twitter-to-kafka-service:0.0.1-SNAPSHOT
+    networks:
+      application: {}
+    ports:
+    - published: 5006
+      target: 5006
+    volumes:
+    - /e/seemakurthi/courses/microservices_ali/sources/microservices-demo/docker-compose/docker-logs:/workspace/twitter-to-kafka-service/logs:rw
+  zookeeper:
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SERVERS: zookeeper:2888:3888
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_TICK_TIME: 2000
+    hostname: zookeeper
+    image: confluentinc/cp-zookeeper:5.0.4
+    networks:
+      application: {}
+    ports:
+    - published: 2181
+      target: 2181
+version: '3.7'
+
