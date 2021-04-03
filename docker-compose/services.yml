@@ -6,7 +6,7 @@ services:
       - "5006:5006"
     volumes:
       - "./twitter-to-kafka-service-logs:/workspace/twitter-to-kafka-service/logs"
-      - "/home/docker/check-config-server-started.sh:/usr/local/bin/check-config-server-started.sh"
+      - "/c/Users/Vijay/check-kafka-topics-created-config-server-started.sh:/usr/local/bin/check-kafka-topics-created-config-server-started.sh"
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms128m -Xmx256m"
       - "LOGGING_LEVEL_COM_LAB_ALI=info"
@@ -19,7 +19,7 @@ services:
     depends_on:
       - config-server 
     user: root
-    entrypoint: ["/usr/local/bin/check-config-server-started.sh"]
+    entrypoint: ["/usr/local/bin/check-kafka-topics-created-config-server-started.sh"]
     networks:
       - ${GLOBAL_NETWORK:-services}
   kafka-to-elasticsearch-service:
@@ -28,7 +28,7 @@ services:
       - "6006:6006"
     volumes:
       - "./kafka-to-elasticsearch-service-logs:/workspace/kafka-to-elasticsearch-service/logs"
-      - "/home/docker/check-config-server-started.sh:/usr/local/bin/check-config-server-started.sh"
+      - "/c/Users/Vijay/check-kafka-topics-created-config-server-started.sh:/usr/local/bin/check-kafka-topics-created-config-server-started.sh"
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms128m -Xmx256m"
       - "LOGGING_LEVEL_COM_LAB_ALI=info"
@@ -38,10 +38,14 @@ services:
       - "KAFKA-CONFIG_SCHEMA-REGISTRY-URL=http://schema-registry:8081"
       - "TWITTER-TO-KAFKA-SERVICE_ENABLE-MOCK-TWEETS=true"
       - "SPRING_CLOUD_CONFIG_URI=http://config-server:8888"
+      - "ELASTIC-CONFIG_CONNECTION-URL=http://elastic-1:9200"
     depends_on:
-      - config-server 
+      - config-server
+      - twitter-to-kafka-service
+      - kafka-broker-1
+      - elastic-1
     user: root
-    entrypoint: ["/usr/local/bin/check-config-server-started.sh"]
+    entrypoint: ["/usr/local/bin/check-kafka-topics-created-config-server-started.sh"]
     networks:
       - ${GLOBAL_NETWORK:-services}
   config-server:

@@ -16,6 +16,9 @@ import com.lab.ali.TwitterAvroModel;
 import com.lab.ali.appconfigdata.KafkaConfigData;
 import com.lab.ali.appconfigdata.KafkaConsumerConfigData;
 import com.lab.ali.client.KafkaAdminClient;
+import com.lab.ali.elastic.indexclient.service.ElasticIndexClient;
+import com.lab.ali.elastic.model.index.TwitterIndexModel;
+import com.lab.ali.kafkatoelasticsvc.transformer.AvroToElasticModelTransformer;
 
 import lombok.Data;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -34,15 +37,21 @@ public class TwitterKafkaConsumer implements KafkaConsumer<Long, TwitterAvroMode
 	private KafkaConfigData kafkaConfigData;
 	private KafkaConsumerConfigData kafkaConsumerConfigData;
 	private KafkaAdminClient kafkaAdminClient;
+	private ElasticIndexClient<TwitterIndexModel> elasticIndexClient;
+	private AvroToElasticModelTransformer avroToElasticModelTransformer;
 	
 	public TwitterKafkaConsumer(KafkaConfigData kafkaConfigData,
 			KafkaConsumerConfigData kafkaConsumerConfigData,
 			KafkaAdminClient kafkaAdminClient,
-			KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry) {
+			KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry,
+			ElasticIndexClient<TwitterIndexModel> elasticIndexClient,
+			AvroToElasticModelTransformer avroToElasticModelTransformer) {
 		this.kafkaAdminClient = kafkaAdminClient;
 		this.kafkaConfigData = kafkaConfigData;
 		this.kafkaConsumerConfigData = kafkaConsumerConfigData;
 		this.kafkaListenerEndpointRegistry = kafkaListenerEndpointRegistry;
+		this.elasticIndexClient = elasticIndexClient;
+		this.avroToElasticModelTransformer = avroToElasticModelTransformer;
 	}
 	
 	@EventListener
@@ -69,6 +78,13 @@ public class TwitterKafkaConsumer implements KafkaConsumer<Long, TwitterAvroMode
                messages.stream().forEach(tvm -> {
             	   log.info("message  is : {} ", tvm.getText());
                });
+               
+               List<TwitterIndexModel> twitterIndexModels = avroToElasticModelTransformer.
+            		   getElasticModels(messages);
+               List<String> documentIds = elasticIndexClient.save(twitterIndexModels);
+               log.info("Documents saved to elasticsearch with ids {}",
+            		   documentIds.toArray());
+
       
       } 
 }
