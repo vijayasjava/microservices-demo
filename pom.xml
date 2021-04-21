@@ -40,6 +40,7 @@
     <module>config-server</module>
     <module>kafka-to-elasticsearch-service</module>
     <module>elastic</module>
+    <module>elastic-query-service</module>
   </modules>
 
 	<dependencyManagement>
@@ -87,8 +88,14 @@
 	     <dependency>
 	     	<artifactId>elastic-index-client</artifactId>
 	     	<groupId>com.lab.ali</groupId>
-				<version>${project.version}</version>
+			<version>${project.version}</version>
 	     </dependency>
+
+	  	<dependency>
+	       <groupId>com.lab.ali</groupId>
+	  	   <artifactId>elastic-query-client</artifactId>
+		   <version>${project.version}</version>
+	  	</dependency>
 
 		<dependency>
 		    <groupId>org.springframework.cloud</groupId>
@@ -98,11 +105,17 @@
 		    <scope>import</scope>
 		</dependency>
 						
-      <dependency>
+	      <dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-config-server</artifactId>
 				<version>${spring-cloud.version}</version>
 			</dependency>
+		        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+				<version>${spring-cloud.version}</version>
+
+        </dependency>
 	  		
 			<dependency>
 				<groupId>org.springframework.boot</groupId>

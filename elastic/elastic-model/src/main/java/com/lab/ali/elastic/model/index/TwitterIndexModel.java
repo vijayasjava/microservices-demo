@@ -17,7 +17,7 @@ import lombok.Data;
 
 @Data
 @Builder
-@Document(indexName = "${elastic-config.indexName}")
+@Document(indexName = "#{elasticConfigData.indexName}")
 public class TwitterIndexModel implements IndexModel {
 
 	@JsonProperty

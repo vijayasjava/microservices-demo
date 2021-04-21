@@ -15,10 +15,11 @@ import com.lab.ali.elastic.indexclient.service.ElasticIndexClient;
 import com.lab.ali.elastic.indexclient.util.ElasticIndexUtil;
 import com.lab.ali.elastic.model.index.TwitterIndexModel;
 
-@Service
-@ConditionalOnProperty(name = "elastic-config.is-repository",
-havingValue = "true", matchIfMissing = false)
-public class TwitterElasticIndexClient implements
+/*@Service
+*//*
+ * @ConditionalOnProperty(name = "elastic-config.is-repository", havingValue =
+ * "false", matchIfMissing = false)
+ */public class TwitterElasticIndexClient implements
 	ElasticIndexClient<TwitterIndexModel> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TwitterElasticIndexClient.class);

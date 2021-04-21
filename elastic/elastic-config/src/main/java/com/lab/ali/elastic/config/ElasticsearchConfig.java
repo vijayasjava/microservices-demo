@@ -8,12 +8,16 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.lab.ali.appconfigdata.ElasticConfigData;
 
 @Configuration
+@EnableElasticsearchRepositories(basePackages = 
+{"com.lab.ali.elastic.indexclient.respository",
+		"com.lab.ali.elasticindexclient.repository"})
 public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
 
     private final ElasticConfigData elasticConfigData;

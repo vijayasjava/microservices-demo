@@ -6,15 +6,19 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.lab.ali.elastic.indexclient.respository.TwitterElasticsearchIndexRepository;
 import com.lab.ali.elastic.indexclient.service.ElasticIndexClient;
 import com.lab.ali.elastic.model.index.TwitterIndexModel;
 
+@Primary
 @Service
-@ConditionalOnProperty(name = "elastic-config.is-repository",
-	havingValue = "true", matchIfMissing = true)
+/*
+ * @ConditionalOnProperty(name = "elastic-config.is-repository", havingValue =
+ * "true", matchIfMissing = true)
+ */
 public class TwitterElasticRepositoryIndexClient 
 		implements ElasticIndexClient<TwitterIndexModel> {
 
