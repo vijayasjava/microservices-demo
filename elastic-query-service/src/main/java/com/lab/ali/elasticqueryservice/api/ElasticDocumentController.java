@@ -22,6 +22,7 @@ import com.lab.ali.elastic.model.index.TwitterIndexModel;
 import com.lab.ali.elasticindexclient.service.ElasticQueryClient;
 import com.lab.ali.elasticqueryservice.model.ElasticQueryServiceRequestModel;
 import com.lab.ali.elasticqueryservice.model.ElasticQueryServiceResponseModel;
+import com.lab.ali.elasticqueryservice.transformer.ElasticQueryServiceResponseModelAssembler;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +32,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ElasticDocumentController {
 
 	ElasticQueryClient<TwitterIndexModel> elasticQueryClient;
+	ElasticQueryServiceResponseModelAssembler elasticQueryServiceResponseModelAssembler;
 	
-	public ElasticDocumentController(ElasticQueryClient<TwitterIndexModel> elasticQueryClient) {
+	public ElasticDocumentController(ElasticQueryClient<TwitterIndexModel> elasticQueryClient,
+			ElasticQueryServiceResponseModelAssembler elasticQueryServiceResponseModelAssembler) {
 		this.elasticQueryClient = elasticQueryClient;
+		this.elasticQueryServiceResponseModelAssembler = elasticQueryServiceResponseModelAssembler;
 	}
 	
     @GetMapping("/")
@@ -41,38 +45,19 @@ public class ElasticDocumentController {
     	getAllDocuments() {
     	return this.elasticQueryClient.
     			findAllIndexModels().
-    			map(models -> models.stream().map(model -> {
-    				ElasticQueryServiceResponseModel elasticQueryServiceResponseModel =
-    						new ElasticQueryServiceResponseModel();
-    				
-    				elasticQueryServiceResponseModel.setCreatedAt(model.getCreatedAt());
-    				elasticQueryServiceResponseModel.setId(model.getId());
-    				elasticQueryServiceResponseModel.setText(model.getText());
-    				elasticQueryServiceResponseModel.setUserId(model.getUserId());
-    				
-    				return elasticQueryServiceResponseModel;
-    				}).collect(Collectors.toList())).
+    			map(this.elasticQueryServiceResponseModelAssembler::toModels).
     			map(responsemodels -> ResponseEntity.ok(responsemodels)).
     			orElse(ResponseEntity.ok(new ArrayList<>())); 
     }
 
     @GetMapping("/{id}")
-    public @ResponseBody Optional<ResponseEntity<ElasticQueryServiceResponseModel>> 
+    public @ResponseBody ResponseEntity<ElasticQueryServiceResponseModel> 
     		getDocumentById(@PathVariable @NotEmpty String id) {
     	
     	return this.elasticQueryClient.getIndexModelById(id)
-    		.map(x -> {
-				ElasticQueryServiceResponseModel elasticQueryServiceResponseModel =
-						new ElasticQueryServiceResponseModel();
-
-				elasticQueryServiceResponseModel.setCreatedAt(x.getCreatedAt());
-				elasticQueryServiceResponseModel.setId(x.getId());
-				elasticQueryServiceResponseModel.setText(x.getText());
-				elasticQueryServiceResponseModel.setUserId(x.getUserId());
-				
-				return elasticQueryServiceResponseModel;
-    		})
+    		.map(this.elasticQueryServiceResponseModelAssembler::toModel)
     		.map(x -> ResponseEntity.ok(x))
+    		.orElse(null)
     		;
     }
 
@@ -82,17 +67,7 @@ public class ElasticDocumentController {
 
     	return this.elasticQueryClient.
     			findIndexModelByText(elasticQueryServiceRequestModel.getText()).
-    			map(models -> models.stream().map(model -> {
-    				ElasticQueryServiceResponseModel elasticQueryServiceResponseModel =
-    						new ElasticQueryServiceResponseModel();
-    				
-    				elasticQueryServiceResponseModel.setCreatedAt(model.getCreatedAt());
-    				elasticQueryServiceResponseModel.setId(model.getId());
-    				elasticQueryServiceResponseModel.setText(model.getText());
-    				elasticQueryServiceResponseModel.setUserId(model.getUserId());
-    				
-    				return elasticQueryServiceResponseModel;
-    				}).collect(Collectors.toList())).
+    			map(this.elasticQueryServiceResponseModelAssembler::toModels).
     			map(responsemodels -> ResponseEntity.ok(responsemodels)).
     			orElse(ResponseEntity.ok(new ArrayList<>())); 
     	

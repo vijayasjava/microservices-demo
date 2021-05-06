@@ -210,7 +210,16 @@
 					</exclusion>
 				</exclusions>
 			</dependency>			
+
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-hateoas</artifactId>
+				<version>${spring.boot.version}</version>
+		</dependency>
 		</dependencies>
+
+
+
 	</dependencyManagement>
 
 	<build>
